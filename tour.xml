@@ -1,0 +1,961 @@
+﻿<krpano version="1.20.6" title="UX360 VUHÓ" showerrors="false" logkey="false">
+	
+	<include url="vuho_overlay.xml" if="1"/>
+	
+	<style name="text"
+	       type="text"
+	       background="false"
+	       css="color:#FFFFFF;"
+	       enabled="false"
+	       />
+	
+	<include url="%VIEWER%/plugins/fps.xml" if="0" />
+	<events onkeydown="debugaction();" if="0"/>
+	<action name="debugaction" if="0" >
+		if(keycode == 89,
+			print(get(layer[OverlayMenu].maskchildren));
+		);
+		if(keycode == 85,
+		);
+		
+	</action>
+	
+	
+	<include url="plugins/depthmap_navigation.xml" if="0"/>
+	<include url="plugins/depthmap_helpertool.xml" if="0" /> 
+	
+	<include url="map/map.xml" />
+	
+	<style name="golden_highlight" fillcolor="0x820505" bordercolor="0xe0d12b" fillalpha="0" borderalpha="0"
+		onloaded="setintervalflash();"
+		onover="borderalphatween1();clearintervalflash();"
+		onout="borderalphatween0();setintervalflash();"
+		onclick="floorspot_onclick();"
+		flashingout="false"
+		/>
+		
+	<action name="setintervalflash" scope="local">
+	calc(clearid,'flashid'+caller.name);
+			setinterval(clearid,1.1,
+				if (caller !== null,
+					
+					if(caller.flashingout == true,
+						tween(caller.borderalpha,0,1);
+						,
+						tween(caller.borderalpha,.6,1);
+					);
+					
+					if(caller.borderalpha GE .6, 
+						set(caller.flashingout,true);
+					);
+					
+					if(caller.borderalpha LE 0, 
+						set(caller.flashingout,false);
+					);
+				);
+				,
+				<!-- null caller -->
+				clearinterval(clearid);
+			);
+	</action>
+	<action name="clearintervalflash" scope="local">
+		clearinterval(calc('flashid' + caller.name));
+	</action>
+	<action name="borderalphatween1" scope="local">
+		tween(hotspot[get(caller.name)].borderalpha,1);
+	</action>
+	
+	<action name="borderalphatween0" scope="local">
+		tween(hotspot[get(caller.name)].borderalpha,0);
+	</action>
+	
+	<layer name="Dummy_Remover" enabled="false" type="container" keep="true" align="center" width="5000" height="5000" bgcolor="0x000000" bgalpha="0" bgcapture="true" maskchildren="true" capture="true" handcursor="false"
+	onclick="remove_images();"/>
+	
+	<action name="remove_images" scope="local">
+		tween(layer[window_vista].alpha,0);set(layer[window_vista].enabled,false);
+		tween(layer[etiqueta_notincluded].alpha,0);set(layer[etiqueta_notincluded].enabled,false);
+		
+		tween(layer[infoslide1].alpha,0);set(layer[infoslide1].enabled,false);
+		tween(layer[infoslide2].alpha,0);set(layer[infoslide2].enabled,false);
+		tween(layer[infoslide3].alpha,0);set(layer[infoslide3].enabled,false);
+		
+		if(device.handheld == true,
+			disablemap(); 
+		);
+		
+		
+		set(layer[Dummy_Remover].enabled,false);	
+	</action>
+	
+	<action name="enable_dummy_remover" scope="local">
+		set(layer[Dummy_Remover].enabled,true);
+	</action>
+	
+	<action name="disable_dummy_remover" scope="local">
+		set(layer[Dummy_Remover].enabled,false);
+	</action>
+	
+	
+	
+	<!-- Show Etiqueta -->
+	<action name="showetiqueta" scope="local">
+		
+		set(layer[etiqueta_notincluded].enabled,true);
+		tween(layer[etiqueta_notincluded].alpha,1);
+		enable_dummy_remover();
+	</action>
+	
+	<action name="switch_infoslide" scope="local" args="infoslide_n">		
+		if(infoslide_n == 1,
+			set(layer[infoslide2].enabled,false);tween(layer[infoslide2].alpha,0,.1);
+			set(layer[infoslide3].enabled,false);tween(layer[infoslide3].alpha,0,.1);
+			
+			set(layer[infoslide1].enabled,true); tween(layer[infoslide1].alpha,1);
+		);
+		
+		if(infoslide_n == 2,
+			set(layer[infoslide1].enabled,false);tween(layer[infoslide1].alpha,0,.1);
+			set(layer[infoslide3].enabled,false);tween(layer[infoslide3].alpha,0,.1);
+			
+			set(layer[infoslide2].enabled,true); tween(layer[infoslide2].alpha,1);
+		);
+		
+		if(infoslide_n == 3,
+			set(layer[infoslide1].enabled,false);tween(layer[infoslide1].alpha,0,.1);
+			set(layer[infoslide2].enabled,false);tween(layer[infoslide2].alpha,0,.1);
+			
+			set(layer[infoslide3].enabled,true); tween(layer[infoslide3].alpha,1);
+		);
+	</action>
+	
+	<layer name="infoslide1" type="image" url="infoslide1.png" keep="true" align="centered" scale="1" alpha="0" enabled="false" y="-10%"
+	maskchildren="true" scalechildren="true" handcursor="false">
+	
+		<layer name="Next_Button" type="image" url="%VIEWER%/icons/nextoff.png"
+		onover="set(layer[Next_Button].url,%VIEWER%/icons/nexton.png)"
+		onout="set(layer[Next_Button].url,%VIEWER%/icons/nextoff.png)"
+		onclick="switch_infoslide(2);set(layer[Next_Button].url,%VIEWER%/icons/nextoff.png);"
+		parent="infoslide1" 
+		align="righttop"
+		x="5%" y="5%" scale="0.08" devices="desktop"/>
+		
+		<layer name="Next_Button" type="image" url="%VIEWER%/icons/nextoff.png"
+		onover="set(layer[Next_Button].url,%VIEWER%/icons/nexton.png)"
+		onout="set(layer[Next_Button].url,%VIEWER%/icons/nextoff.png)"
+		onclick="switch_infoslide(2);set(layer[Next_Button].url,%VIEWER%/icons/nextoff.png);"
+		parent="infoslide1" 
+		align="righttop"
+		x="5%" y="5%" scale="0.15" devices="handheld"/>
+		
+	</layer>
+	
+	<layer name="infoslide2" type="image" url="infoslide2.png" keep="true" align="centered" scale="1" alpha="0" enabled="false" y="-10%"
+	maskchildren="true" scalechildren="true" handcursor="false">
+	
+		<layer name="Prev_Button" type="image" url="%VIEWER%/icons/prevoff.png"
+		onover="set(layer[Prev_Button].url,%VIEWER%/icons/prevon.png)"
+		onout="set(layer[Prev_Button].url,%VIEWER%/icons/prevoff.png)"
+		onclick="switch_infoslide(1);set(layer[Prev_Button].url,%VIEWER%/icons/prevoff.png);"
+		parent="infoslide2" 
+		align="righttop"
+		x="10%" y="5%" scale="0.08" devices="desktop"/>
+		
+		<layer name="Next_Button2" type="image" url="%VIEWER%/icons/nextoff.png"
+		onover="set(layer[Next_Button2].url,%VIEWER%/icons/nexton.png)"
+		onout="set(layer[Next_Button2].url,%VIEWER%/icons/nextoff.png)"
+		onclick="switch_infoslide(3);set(layer[Next_Button2].url,%VIEWER%/icons/nextoff.png);"
+		parent="infoslide2" 
+		align="righttop"
+		x="5%" y="5%" scale="0.08" devices="desktop"/>
+		
+		<layer name="Prev_Button" type="image" url="%VIEWER%/icons/prevoff.png"
+		onover="set(layer[Prev_Button].url,%VIEWER%/icons/prevon.png)"
+		onout="set(layer[Prev_Button].url,%VIEWER%/icons/prevoff.png)"
+		onclick="switch_infoslide(1);set(layer[Prev_Button].url,%VIEWER%/icons/prevoff.png);"
+		parent="infoslide2" 
+		align="righttop"
+		x="15%" y="5%" scale="0.15" devices="handheld"/>
+		
+		<layer name="Next_Button2" type="image" url="%VIEWER%/icons/nextoff.png"
+		onover="set(layer[Next_Button2].url,%VIEWER%/icons/nexton.png)"
+		onout="set(layer[Next_Button2].url,%VIEWER%/icons/nextoff.png)"
+		onclick="switch_infoslide(3);set(layer[Next_Button2].url,%VIEWER%/icons/nextoff.png);"
+		parent="infoslide2" 
+		align="righttop"
+		x="5%" y="5%" scale="0.15" devices="handheld"/>
+	</layer>
+	
+	<layer name="infoslide3" type="image" url="infoslide3.png" keep="true" align="centered" scale="1" alpha="0" enabled="false" y="-10%"
+	maskchildren="true" scalechildren="true" handcursor="false">
+	
+		<layer name="Prev_Button2" type="image" url="%VIEWER%/icons/prevoff.png"
+		onover="set(layer[Prev_Button2].url,%VIEWER%/icons/prevon.png)"
+		onout="set(layer[Prev_Button2].url,%VIEWER%/icons/prevoff.png)"
+		onclick="switch_infoslide(2);set(layer[Prev_Button2].url,%VIEWER%/icons/prevoff.png);"
+		parent="infoslide3" 
+		align="righttop"
+		x="10%" y="5%" scale="0.08" devices="desktop"/>
+		
+		<layer name="Close_Button" type="image" url="%VIEWER%/icons/closeoff.png"
+		onover="set(layer[Close_Button].url,%VIEWER%/icons/closeon.png)"
+		onout="set(layer[Close_Button].url,%VIEWER%/icons/closeoff.png)"
+		onclick="remove_images();set(layer[Close_Button].url,%VIEWER%/icons/closeoff.png);"
+		parent="infoslide3" 
+		align="righttop"
+		x="5%" y="5%" scale="0.08" devices="desktop"/>
+		
+		<layer name="Prev_Button2" type="image" url="%VIEWER%/icons/prevoff.png"
+		onover="set(layer[Prev_Button2].url,%VIEWER%/icons/prevon.png)"
+		onout="set(layer[Prev_Button2].url,%VIEWER%/icons/prevoff.png)"
+		onclick="switch_infoslide(2);set(layer[Prev_Button2].url,%VIEWER%/icons/prevoff.png);"
+		parent="infoslide3" 
+		align="righttop"
+		x="15%" y="5%" scale="0.15" devices="handheld"/>
+		
+		<layer name="Close_Button" type="image" url="%VIEWER%/icons/closeoff.png"
+		onover="set(layer[Close_Button].url,%VIEWER%/icons/closeon.png)"
+		onout="set(layer[Close_Button].url,%VIEWER%/icons/closeoff.png)"
+		onclick="remove_images();set(layer[Close_Button].url,%VIEWER%/icons/closeoff.png);"
+		parent="infoslide3" 
+		align="righttop"
+		x="5%" y="5%" scale="0.15" devices="handheld"/>
+	</layer>
+	
+	
+	
+	<action name="infodisplay" scope="local" args="infoslidenumber">
+		calc(infovar,'infoslide' + infoslidenumber);
+		if(layer[get(infovar)].displayed === null,
+			
+			tween(layer[get(infovar)].alpha,1);
+			set(layer[get(infovar)].enabled,true);
+			set(layer[get(infovar)].displayed,true);
+			
+			
+		);
+		
+		
+		if(stagewidth LE 1024,
+			calc(fix_scale_value,stagewidth/1024);
+			roundval(fix_scale_value,2);
+			set(layer[infoslide3].scale,get(fix_scale_value));
+			set(layer[infoslide2].scale,get(fix_scale_value));
+			set(layer[infoslide1].scale,get(fix_scale_value));
+		);
+	</action>
+	
+	<action name="force_infodisplay" scope="local" args="infoslidenumber">
+		calc(infovar,'infoslide' + infoslidenumber);
+		tween(layer[get(infovar)].alpha,1);
+		set(layer[get(infovar)].enabled,true);
+		set(layer[get(infovar)].displayed,true);
+	</action>
+	
+	<layer name="etiqueta_notincluded" keep="true" type="image" alpha="0" enabled="false" visible="true" align="center" scale="0.3" url="etiqueta.png"
+	onclick="remove_images();" devices="desktop">
+	</layer>
+	
+	<layer name="etiqueta_notincluded" keep="true" type="image" alpha="0" enabled="false" visible="true" align="center" scale="0.15" url="etiqueta.png"
+	onclick="remove_images();" devices="handheld">
+	
+	</layer>
+	<!-- TESTING NAVIGATOR MOVE CLICKDOWN -->
+	
+	
+	<!-- Styles for Depthmap Locations -->
+	
+	<style name="scene_1"  ox="0"    oy="0"   oz="0"   linkedscene="scene_1" autohotspot="true" 
+	allowed="scene_2|scene_3|scene_4"/>
+	<style name="scene_2"  ox="203" oy="0"   oz="118" linkedscene="scene_2" autohotspot="true" 
+	allowed="scene_1|scene_2|scene_3"/>
+	<style name="scene_3"  ox="221" oy="0"   oz="-277" linkedscene="scene_3" autohotspot="true" 
+	allowed="scene_1|scene_2|scene_4|scene_5"/>
+	<style name="scene_4"  ox="-199"    oy="0" oz="-278" linkedscene="scene_4" autohotspot="true" 
+	allowed="scene_1|scene_3|scene_4" />
+	<style name="scene_5"  ox="418" oy="0"   oz="-55" linkedscene="scene_5" autohotspot="true" 
+	allowed="scene_11|scene_3"/>
+	<style name="scene_6" ox="657" oy="0" oz="99" linkedscene="scene_6" autohotspot="true" 
+	allowed="scene_11" vangle_tolerance="50" angle_tolerance="60"/>
+	<style name="scene_7" ox="658" oy="0" oz="-326" linkedscene="scene_7" autohotspot="true" 
+	allowed="scene_12"/>
+	<style name="scene_8" ox="942" oy="0" oz="-315" linkedscene="scene_8" autohotspot="true" 
+	allowed="scene_12"/>
+	<style name="scene_9" ox="1077" oy="0" oz="98" linkedscene="scene_9" autohotspot="true" 
+	allowed="scene_10|scene_12"/>
+	<style name="scene_10" ox="832" oy="0" oz="258" linkedscene="scene_10" autohotspot="true" 
+	allowed="scene_9"/>
+	
+	<style name="scene_11" ox="657" oy="0" oz="-50" linkedscene="scene_11" autohotspot="true" 
+	allowed="scene_6|scene_12|scene_5|scene_7" vangle_tolerance="50"/>
+	<style name="scene_12" ox="783" oy="0" oz="-32" linkedscene="scene_12" autohotspot="true" 
+	allowed="scene_11|scene_7|scene_8|scene_9" vangle_tolerance="50"/>
+	
+	<style name="scene_13" ox="942" oy="0" oz="-315" linkedscene="scene_13" autohotspot="true" 
+	allowed="scene_12" angle_tolerance="20"/>
+
+	
+	<action name="print">
+		showlog();
+		trace(" ",%1);
+	</action>
+	
+	<events webvr_onentervr="reload_current_scene();" webvr_onexitvr="reload_current_scene();" />
+	
+	<action name="reload_current_scene"> 
+		copy(scenename,xml.scene);
+		loadscene(get(scenename),null,MERGE|KEEPVIEW|KEEPMOVING,BLEND(0.5));
+				
+		tween(view.tx|view.ty|view.tz, calc(image.ox + '|' + image.oy + '|' + image.oz), 2.0, default);
+		
+		
+	</action>
+	
+	<!-- Overload Tour Loading so it keeps coordinates and has nice animation 
+	ALSO UPDATED FLAG SO IT BLENDS AND KEEPS VIEW-->
+	
+	<action name="generate_floorspots" autorun="onstart" scope="local">
+		set(floorheight, 160.0);
+		for(set(i,0), i LT style.count, inc(i),
+			if (style[get(i)].autohotspot == true,
+				copy(st, style[get(i)]);
+				addhotspot(calc('hotspot_' + (i+1)), hs);
+				hs.loadstyle(floorspot);
+				copy(hs.tx, st.ox);
+				copy(hs.tz, st.oz);
+				calc(hs.ty, floorheight + 1.0*st.oy - 1.0);
+				copy(hs.linkedscene, st.linkedscene);
+			);
+		);
+	</action>
+	
+	<style name="floorspot" keep="true" type="text"
+		css="font-size:20px;text-align:center;" vcenter="true"
+		width="200" height="200" scale="0.15"
+		bgroundedge="100" bgborder="2 0x000000 1" bgshadow="0 0 5 0xFFFFFF 1.0"
+		oversampling="2" mipmapping="true" zorder="1"
+		distorted="true" depth="0" depthbuffer="true"
+		torigin="world" rotationorder="xyz" rx="-90"
+		xalpha="0"
+		alpha="0.3"
+		onover.addevent="tween(scale,0.16); tween(alpha,0.6);"
+		onout.addevent="tween(scale,0.15); tween(alpha,0.3);"
+		onclick="floorspot_onclick();"
+		enabled="false"
+		visible="false"
+		/>
+	
+	<style name="visual_floorspot" keep="true" type="text"
+		css="font-size:20px;text-align:center;" vcenter="true"
+		width="200" height="200" scale="0.15"
+		bgroundedge="100" bgborder="2 0x000000 1" bgshadow="0 0 5 0xFFFFFF 1.0"
+		oversampling="2" mipmapping="true" zorder="1"
+		distorted="true" depth="0" depthbuffer="true"
+		torigin="world" rotationorder="xyz" rx="-90"
+		xalpha="0"
+		alpha="0.3"
+		onover.addevent="tween(scale,0.16); tween(alpha,0.6);"
+		onout.addevent="tween(scale,0.15); tween(alpha,0.3);"
+		onclick="floorspot_onclick();"
+		enabled="true"
+		visible="true"
+		/>
+		
+	<!-- Invisible layer that holds global variables -->
+	<layer name="variableHolder" keep="true" curr_floor_color="claro" curr_mueble_color="claro" />
+	
+	<action name="tour_loadscene" scope="local" args="scenename">
+		<!-- OUTSIDE EXCEPTIONS -->
+		indexoftxt(isKitchen,get(scenename),'meson');
+		
+		disable_material_ui();
+		if(isKitchen != -1,
+			loadscene(get(scenename),null,MERGE|KEEPVIEW|KEEPMOVING,BLEND(0.5));
+			
+			tween(view.tx|view.ty|view.tz, calc(image.ox + '|' + image.oy + '|' + image.oz), 2.0, default);
+			
+			if(isOutside != -1 AND device.handheld == true,
+				disable_map_button();
+			);
+			
+			
+			,
+			<!-- Loads scene, conserving floor color and mueble color -->
+			
+			if(device.handheld == true,
+				enable_map_button();
+			);
+			
+			
+			indexoftxt(i,get(scenename),'_');
+			
+			
+			calc(scene_n,slice(scenename,i+1,scenename.length));
+			
+			if(scene_n LT 5,
+				calc(to_load,'scene_' + scene_n + '_' + layer[variableHolder].curr_floor_color + '-' +layer[variableHolder].curr_mueble_color);
+				,
+				calc(to_load,'scene_' + scene_n + '_' + layer[variableHolder].curr_floor_color);
+			);
+			
+			if(xml.scene != scenename,
+				loadscene(get(to_load),null,MERGE|KEEPVIEW|KEEPMOVING,BLEND(0.5));
+				
+				tween(view.tx|view.ty|view.tz, calc(image.ox + '|' + image.oy + '|' + image.oz), 2.0, default);
+				
+				<!--
+				tween(view.tx|view.ty|view.tz, calc(image.ox + '|' + image.oy + '|' + image.oz), calc(winnerdistance*0.005), default);
+				-->
+			);
+		);
+		
+		
+	</action>
+	
+	<action name="floorspot_onclick" scope="local">
+		
+		if(xml.scene != caller.linkedscene,
+			tour_loadscene(get(caller.linkedscene),null,MERGE|KEEPVIEW|KEEPMOVING,BLEND(0.5));
+		);
+	</action>
+	
+	<events onclick="check_navigation();"/>
+	
+	
+	
+	<action name="check_navigation">
+		
+		screentosphere(mouse.x, mouse.y, mouse_hlookat, mouse_vlookat);
+		mod(mouse_hlookat,360);
+		if(mouse_hlookat LT 0,
+			add(mouse_hlookat,360));
+		
+		copy(v, global.view);
+			for(set(i,0), i LT style.count, inc(i),
+				indexoftxt(is_movable_hotspot, get(style[get(i)].name), 'scene_');
+				
+				if(is_movable_hotspot == 0,
+					copy(hs, style[get(i)]);
+					copy(x,hs.ox);
+					copy(y,hs.oy);
+					copy(z,hs.oz);
+					
+					sub(xlength,x,v.tx);
+					sub(zlength,z,v.tz);
+					
+					Math.atan2(hg,xlength,zlength);
+					mul(hg,180);
+					div(hg,Math.pi);
+					if(hg LT 0,
+						add(hg,360));
+					
+					calc(distance,sqrt(pow(xlength,2)+pow(zlength,2)));
+					sub(height,get(y),v.ty);
+					
+					Math.atan2(vg,height,distance);
+					
+					mul(vg,180);
+					div(vg,Math.pi);
+					
+					<!-- Check if close to mouse click -->
+					calc(angle_hdiff, abs(hg - mouse_hlookat));
+					calc(angle_vdiff, abs(vg - mouse_vlookat));
+					
+					if(image.angle_tolerance === null,
+						set(angle_tolerance,30);
+						,
+						copy(angle_tolerance,image.angle_tolerance);
+					);
+					if(image.vangle_tolerance === null,
+						set(vangle_tolerance,30);
+						,
+						copy(vangle_tolerance,image.vangle_tolerance);
+					);
+					
+					if(angle_hdiff LE angle_tolerance AND angle_vdiff LE vangle_tolerance AND distance LE 600 AND distance GT 0,
+						
+						indexoftxt(is_allowed,get(image.allowed),get(hs.name));
+						if(is_allowed != -1,
+							if (winner !== null,
+								if(distance LE winnerdistance,
+									copy(winnerdistance,distance);
+									copy(winner,hs);
+								);
+								,
+								copy(winnerdistance,distance);
+								copy(winner,hs);
+							);
+						);
+					);
+				);
+				
+				
+				
+			);
+			if (winner !== null,
+				
+				if(xml.scene != winner.linkedscene,
+					tour_loadscene(get(winner.linkedscene),null,MERGE|KEEPVIEW|KEEPMOVING,BLEND(0.5));
+				);
+				<!--
+				tween(view.tx|view.ty|view.tz, calc(image.ox + '|' + image.oy + '|' + image.oz), calc(winnerdistance*0.005), default);
+				-->
+				,
+				<!-- If no winner attempt to move and fail -->
+				
+			);
+			delete(winner);
+			delete(winnerdistance);
+			
+			
+	</action>
+	
+	<style name="depthmapsettings" background="none" />
+	<display depthmaprendermode="depthmap" /> <!-- Or depth -->
+
+	<!-- startup action - load the first scene -->
+	<action name="startup" autorun="onstart">
+		
+		if(startscene === null OR !scene[get(startscene)], copy(startscene,scene[scene_1_claro-claro].name); );
+		loadscene(get(startscene), null, get(skin_settings.loadscene_flags), get(blendmode));
+		tween(view.tx|view.ty|view.tz, calc(image.ox + '|' + image.oy + '|' + image.oz), 2.0, default);
+		
+		disable_map_button();
+		infodisplay(1);
+		if(startactions !== null, startactions() );
+		
+	</action>
+	
+	<style name="button" type="text" css="text-align:center;" padding="4 0" mergedalpha="false" bgborder="0 0xFFFFFF 1" bgroundedge="1" bgshadow="0 1 4 0x000000 1.0" ondown="set(bgcolor, 0xDDDDDD);" onup="set(bgcolor, 0xFFFFFF);" />
+	
+	
+	
+	<scene name="scene_1_claro-claro" title="Entrada" havevrimage.mobilevr="false" havevrimage.no-mobilevr="true" thumburl="panos/1_entrada2.tiles/thumb.jpg" lat="" lng="" heading="" onstart="infodisplay(1);setactiverect(1);">
+
+		<view hlookat="131.104" vlookat="3.230" fovtype="MFOV" fov="124.090" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/1_entrada2.tiles/preview.jpg" />
+
+		<image if="!(webvr.isenabled OR device.mobilevr)" style="scene_1">
+			<cube url="panos/1_entrada2.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280" />
+			<depthmap url="depthmaps/depth1.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+
+		<image stereo="true" stereolabels="1|2" if="webvr.isenabled OR device.mobilevr" style="scene_1">
+			<cube url="panos/1_entrada2.tiles/vr/pano_%t_%s.jpg" />
+			<depthmap url="depthmaps/depth1.png" enabled ="true" scale="0.7" offset="0"/>
+		</image>
+		
+		
+		<hotspot name="spot1" style="visual_floorspot" tx="180" ty="150" tz="124" keep="false" visible="true" enabled="true" linkedscene="scene_2"/>
+		<hotspot name="spot2" style="visual_floorspot" tx="-120" ty="150" tz="-260" keep="false" visible="true" enabled="true" linkedscene="scene_4" 
+		/>
+		<hotspot name="spot3" style="visual_floorspot" tx="180" ty="150" tz="-250" keep="false" visible="true" enabled="true" linkedscene="scene_3"
+		/>
+		
+		<layer name="window_vista" type="image" align="center" keep="true" alpha="0" enabled="false" scale="0.2" url="vista_bogota.jpg"
+		onclick="remove_images();" devices="desktop" if="!(webvr.isenabled OR device.mobilevr)"/>
+		
+		<layer name="window_vista" type="image" align="center" keep="true" alpha="0" enabled="false" scale="0.1" url="vista_bogota.jpg"
+		onclick="remove_images();" devices="handheld" if="!(webvr.isenabled OR device.mobilevr)"/>
+		
+		<hotspot name="window_hitbox" capture="false" borderalpha="0" fillalpha="0"
+		onover="set(hotspot[window_icon].url,%VIEWER%/icons/windowsighton.png)"
+		onout="set(hotspot[window_icon].url,%VIEWER%/icons/windowsightoff.png)"
+		onclick="tween(layer[window_vista].alpha,1);set(layer[window_vista].enabled,true);enable_dummy_remover();" if="!(webvr.isenabled OR device.mobilevr)">
+			<point ath="155.82" atv="6.51" />
+			<point ath="155.84" atv="-7.47" />
+			<point ath="-178.54" atv="-8.14" />
+			<point ath="-178" atv="7.28" />
+		</hotspot>
+				
+		<hotspot name="window_icon" type="image" url="icons/windowsightoff.png" enabled="false" scale="0.15" ath="169" atv="1.11" devices="desktop" if="!(webvr.isenabled OR device.mobilevr)"/>
+		<hotspot name="window_icon" type="image" url="icons/windowsightoff.png" enabled="false" scale="0.1" ath="169" atv="1.11" devices="handheld" if="!(webvr.isenabled OR device.mobilevr)"/>
+		
+		<hotspot name="start_material" type="image" url="icons/switchmatoff.png" ath="83.08" atv="5.29" scale="0.2"
+		onover="set(hotspot[start_material].url,%ROOT%/icons/switchmaton.png);"
+		onout="set(hotspot[start_material].url,%ROOT%/icons/switchmatoff.png);"
+		onclick="enable_material_ui();tour_loadscene(scene_4_madera_neutra_meson_gris);"
+		devices="desktop"
+		/>
+		
+		<hotspot name="start_material" type="image" url="icons/switchmatoff.png" ath="83.08" atv="5.29" scale="0.08"
+		onover="set(hotspot[start_material].url,%ROOT%/icons/switchmaton.png);"
+		onout="set(hotspot[start_material].url,%ROOT%/icons/switchmatoff.png);"
+		onclick="enable_material_ui();tour_loadscene(scene_4_madera_neutra_meson_gris);"
+		devices="handheld"
+		/>
+		
+	</scene>
+
+	<scene name="scene_2_claro-claro" title="Cocina" havevrimage.mobilevr="false" havevrimage.no-mobilevr="true" thumburl="panos/2_cocina2.tiles/thumb.jpg" lat="" lng="" heading="" onstart="setactiverect(2);">
+
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/2_cocina2.tiles/preview.jpg" />
+
+		<image if="!(webvr.isenabled OR device.mobilevr)" style="scene_2">
+			<cube url="panos/2_cocina2.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280" />
+			<depthmap url="depthmaps/depth2.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+
+		<image stereo="true" stereolabels="1|2" if="webvr.isenabled OR device.mobilevr" style="scene_2">
+			<cube url="panos/2_cocina2.tiles/vr/pano_%t_%s.jpg" />
+			<depthmap url="depthmaps/depth2.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+		
+		
+		<hotspot name="spot1" style="visual_floorspot" tx="10" ty="150" tz="0" keep="false" visible="true" enabled="true" linkedscene="scene_1"
+		/>
+		
+		<layer name="window_vista" type="image" align="center" keep="true" alpha="0" enabled="false" scale="0.2" url="vista_bogota.jpg"
+		onclick="remove_images();" devices="desktop" if="!(webvr.isenabled OR device.mobilevr)"/>
+		
+		<layer name="window_vista" type="image" align="center" keep="true" alpha="0" enabled="false" scale="0.1" url="vista_bogota.jpg"
+		onclick="remove_images();" devices="handheld" if="!(webvr.isenabled OR device.mobilevr)"/>
+		
+		<hotspot name="window_hitbox" capture="false" borderalpha="0" fillalpha="0"
+		onover="set(hotspot[window_icon].url,%VIEWER%/icons/windowsighton.png)"
+		onout="set(hotspot[window_icon].url,%VIEWER%/icons/windowsightoff.png)"
+		onclick="tween(layer[window_vista].alpha,1);set(layer[window_vista].enabled,true);enable_dummy_remover();" if="!(webvr.isenabled OR device.mobilevr)">
+			<point ath="179.1" atv="5.75" />
+			<point ath="178.84" atv="-6.66" />
+			<point ath="-160.23" atv="-6.11" />
+			<point ath="-160.34" atv="5.49" />
+		</hotspot>
+				
+		<hotspot name="window_icon" type="image" url="icons/windowsightoff.png" enabled="false" scale="0.1" ath="180" atv="1.11" devices="desktop" if="!(webvr.isenabled OR device.mobilevr)"/>
+		<hotspot name="window_icon" type="image" url="icons/windowsightoff.png" enabled="false" scale="0.08" ath="180" atv="1.11" devices="handheld" if="!(webvr.isenabled OR device.mobilevr)"/>
+		
+		<hotspot name="start_material" type="image" url="icons/switchmatoff.png" ath="115.673" atv="12.26" scale="0.28"
+		onover="set(hotspot[start_material].url,%ROOT%/icons/switchmaton.png);"
+		onout="set(hotspot[start_material].url,%ROOT%/icons/switchmatoff.png);"
+		onclick="enable_material_ui();tour_loadscene(scene_4_madera_neutra_meson_gris);"
+		devices="desktop"
+		/>
+		
+		<hotspot name="start_material" type="image" url="icons/switchmatoff.png" ath="115.673" atv="12.26" scale="0.12"
+		onover="set(hotspot[start_material].url,%ROOT%/icons/switchmaton.png);"
+		onout="set(hotspot[start_material].url,%ROOT%/icons/switchmatoff.png);"
+		onclick="enable_material_ui();tour_loadscene(scene_4_madera_neutra_meson_gris);"
+		devices="handheld"
+		/>
+	</scene>
+	
+	<scene name="scene_4_claro-claro" title="Sala - Cuarto TV" havevrimage.mobilevr="false" havevrimage.no-mobilevr="true" thumburl="panos/4_cuarto_tv2.tiles/thumb.jpg" lat="" lng="" heading="" onstart="setactiverect(3);">
+
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/4_cuarto_tv2.tiles/preview.jpg" />
+
+		<image if="!(webvr.isenabled OR device.mobilevr)" style="scene_4" >
+			<cube url="panos/4_cuarto_tv2.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280" style="scene_2"/>
+			<depthmap url="depthmaps/depth4.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+
+		<image stereo="true" stereolabels="1|2" if="webvr.isenabled OR device.mobilevr" style="scene_4">
+			<cube url="panos/4_cuarto_tv2.tiles/vr/pano_%t_%s.jpg" />
+			<depthmap url="depthmaps/depth4.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+		
+		<hotspot name="spot1" style="visual_floorspot" tx="-10" ty="150" tz="-40" keep="false" visible="true" enabled="true" linkedscene="scene_1"
+		/>
+		<hotspot name="spot2" style="visual_floorspot" tx="130" ty="130" tz="-200" keep="false" visible="true" enabled="true" linkedscene="scene_3"
+		/>
+	</scene>
+	
+	<scene name="scene_3_claro-claro" title="Sala - Comedor" havevrimage.mobilevr="false" havevrimage.no-mobilevr="true" thumburl="panos/3_sala_comedor2.tiles/thumb.jpg" lat="" lng="" heading="" onstart="setactiverect(4);">
+
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/3_sala_comedor2.tiles/preview.jpg" />
+
+		<image if="!(webvr.isenabled OR device.mobilevr)" style="scene_3">
+			<cube url="panos/3_sala_comedor2.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280" />
+			<depthmap url="depthmaps/depth3.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+
+		<image stereo="true" stereolabels="1|2" if="webvr.isenabled OR device.mobilevr" style="scene_3">
+			<cube url="panos/3_sala_comedor2.tiles/vr/pano_%t_%s.jpg" />
+			<depthmap url="depthmaps/depth3.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+		
+		<hotspot name="etiqueta" style="golden_highlight" onclick="showetiqueta()">
+			<point ath="90.1" atv="29.39" />
+			<point ath="90.53" atv="33.23" />
+			<point ath="98.01" atv="31.99" />
+			<point ath="97.68" atv="28.51" />
+		</hotspot>
+		
+		
+		
+		<layer name="window_vista" type="image" align="center" keep="true" alpha="0" enabled="false" scale="0.2" url="vista_bogota.jpg"
+		onclick="remove_images();" devices="desktop" if="!(webvr.isenabled OR device.mobilevr)"/>
+		
+		<layer name="window_vista" type="image" align="center" keep="true" alpha="0" enabled="false" scale="0.1" url="vista_bogota.jpg"
+		onclick="remove_images();" devices="handheld" if="!(webvr.isenabled OR device.mobilevr)"/>
+		
+		<hotspot name="window_hitbox" capture="false" borderalpha="0" fillalpha="0"
+		onover="set(hotspot[window_icon].url,%VIEWER%/icons/windowsighton.png)"
+		onout="set(hotspot[window_icon].url,%VIEWER%/icons/windowsightoff.png)"
+		onclick="tween(layer[window_vista].alpha,1);set(layer[window_vista].enabled,true);enable_dummy_remover();"
+		if="!(webvr.isenabled OR device.mobilevr)">
+			<point ath="177" atv="16.20" />
+			<point ath="177.41" atv="-17.72" />
+			<point ath="-134.51" atv="-12.98" />
+			<point ath="-134.65" atv="11.34" />
+		</hotspot>
+				
+		<hotspot name="window_icon" type="image" url="icons/windowsightoff.png" enabled="false" scale="0.15" ath="-173.61" atv="1.43" 
+		if="!(webvr.isenabled OR device.mobilevr)"/>
+		
+		<hotspot name="spot1" style="visual_floorspot" tx="20" ty="150" tz="-50" keep="false" visible="true" enabled="true" linkedscene="scene_1"
+		/>
+		<hotspot name="spot2" style="visual_floorspot" tx="-67" ty="130" tz="-274" keep="false" visible="true" enabled="true" linkedscene="scene_4"
+		/>
+		<hotspot name="spot3" style="visual_floorspot" tx="400" ty="130" tz="-50" keep="false" visible="true" enabled="true" linkedscene="scene_5"
+		/>
+		
+		<hotspot name="start_material" type="image" url="icons/switchmatoff.png" ath="38.53" atv="3.5" scale="0.175"
+		onover="set(hotspot[start_material].url,%ROOT%/icons/switchmaton.png);"
+		onout="set(hotspot[start_material].url,%ROOT%/icons/switchmatoff.png);"
+		onclick="enable_material_ui();tour_loadscene(scene_4_madera_neutra_meson_gris);"
+		devices="desktop"
+		/>
+		
+		<hotspot name="start_material" type="image" url="icons/switchmatoff.png" ath="38.53" atv="3.5" scale="0.08"
+		onover="set(hotspot[start_material].url,%ROOT%/icons/switchmaton.png);"
+		onout="set(hotspot[start_material].url,%ROOT%/icons/switchmatoff.png);"
+		onclick="enable_material_ui();tour_loadscene(scene_4_madera_neutra_meson_gris);"
+		devices="handheld"
+		/>
+	</scene>
+	
+	<scene name="scene_5_claro" title="Sala - Estudio" onstart="setactiverect(5);" havevrimage.mobilevr="false" havevrimage.no-mobilevr="true" thumburl="panos/5_estudio2.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/5_estudio2.tiles/preview.jpg" />
+
+		<image if="!(webvr.isenabled OR device.mobilevr)" style="scene_5">
+			<cube url="panos/5_estudio2.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280" />
+			<depthmap url="depthmaps/depth5.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+
+		<image stereo="true" stereolabels="1|2" if="webvr.isenabled OR device.mobilevr" style="scene_5">
+			<cube url="panos/5_estudio2.tiles/vr/pano_%t_%s.jpg" />
+			<depthmap url="depthmaps/depth5.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+		
+		<hotspot name="etiqueta" style="golden_highlight" onclick="showetiqueta()">
+			<point ath="50.83" atv="-8.27" />
+			<point ath="58.43" atv="-8.8" />
+			<point ath="57.88" atv="-4.09" />
+			<point ath="50.35" atv="-3.78" />
+		</hotspot>
+		
+		<hotspot name="spot1" style="visual_floorspot" tx="145" ty="150" tz="-180" keep="false" visible="true" enabled="true" linkedscene="scene_3"
+		/>
+		<hotspot name="spot2" style="visual_floorspot" tx="650" ty="180" tz="-51" keep="false" visible="true" enabled="true" linkedscene="scene_11"
+		/>
+		
+		<hotspot name="spot3" style="visual_floorspot" tx="750" ty="140" tz="-51" keep="false" visible="true" enabled="true" linkedscene="scene_12"
+		/>
+		
+	</scene>
+	
+	<scene name="scene_11_claro" title="Pasillo - Baño" onstart="setactiverect(6);" havevrimage.mobilevr="false" havevrimage.no-mobilevr="true" thumburl="panos/12.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/12.tiles/preview.jpg" />
+
+		<image if="!(webvr.isenabled OR device.mobilevr)" style="scene_11">
+			<cube url="panos/12.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280" />
+			<depthmap url="depthmaps/depth11.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+
+		<image stereo="true" stereolabels="1|2" if="webvr.isenabled OR device.mobilevr" style="scene_11">
+			<cube url="panos/12.tiles/vr/pano_%t_%s.jpg" />
+			<depthmap url="depthmaps/depth11.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+		
+		<hotspot name="spot1" style="visual_floorspot" tx="480" ty="180" tz="-45" keep="false" visible="true" enabled="true" linkedscene="scene_5"
+		/>
+		<hotspot name="spot2" style="visual_floorspot" tx="675" ty="200" tz="100" keep="false" visible="true" enabled="true" linkedscene="scene_6"
+		/>
+		<hotspot name="spot3" style="visual_floorspot" tx="840" ty="180" tz="-44" keep="false" visible="true" enabled="true" linkedscene="scene_12"
+		/>
+		
+		<hotspot name="spot4" style="visual_floorspot" tx="920" ty="140" tz="-51" keep="false" visible="true" enabled="true" linkedscene="scene_9"
+		/>
+	</scene>
+	
+	<scene name="scene_6_claro" title="Baño " onstart="setactiverect(7);" havevrimage.mobilevr="false" havevrimage.no-mobilevr="true" thumburl="panos/6_ba__o_pasillo2.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/6_ba__o_pasillo2.tiles/preview.jpg" />
+
+		<image if="!(webvr.isenabled OR device.mobilevr)" style="scene_6">
+			<cube url="panos/6_ba__o_pasillo2.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280" />
+			<depthmap url="depthmaps/depth6.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+
+		<image stereo="true" stereolabels="1|2" if="webvr.isenabled OR device.mobilevr" style="scene_6">
+			<cube url="panos/6_ba__o_pasillo2.tiles/vr/pano_%t_%s.jpg" />
+			<depthmap url="depthmaps/depth6.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+		
+		<hotspot name="spot1" style="visual_floorspot" tx="650" ty="240" tz="-45" keep="false" visible="true" enabled="true" linkedscene="scene_11"
+		/>
+	</scene>
+	
+	<scene name="scene_12_claro" title="Pasillo - Cuartos" onstart="setactiverect(6);" havevrimage.mobilevr="false" havevrimage.no-mobilevr="true" thumburl="panos/22.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/22.tiles/preview.jpg" />
+
+		<image if="!(webvr.isenabled OR device.mobilevr)" style="scene_12">
+			<cube url="panos/22.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280"/>
+			<depthmap url="depthmaps/depth12.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+
+		<image stereo="true" stereolabels="1|2" if="webvr.isenabled OR device.mobilevr" style="scene_12">
+			<cube url="panos/22.tiles/vr/pano_%t_%s.jpg" />
+			<depthmap url="depthmaps/depth12.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+		
+		<hotspot name="spot1" style="visual_floorspot" tx="640" ty="220" tz="-20" keep="false" visible="true" enabled="true" linkedscene="scene_11"
+		/>
+		<hotspot name="spot2" style="visual_floorspot" tx="700" ty="200" tz="-180" keep="false" visible="true" enabled="true" linkedscene="scene_7" />
+		<hotspot name="spot3" style="visual_floorspot" tx="850" ty="200" tz="-180" keep="false" visible="true" enabled="true" linkedscene="scene_8" />
+		<hotspot name="spot4" style="visual_floorspot" tx="980" ty="200" tz="-42" keep="false" visible="true" enabled="true" linkedscene="scene_9" />
+		
+		<hotspot name="spot5" style="visual_floorspot" tx="480" ty="160" tz="-20" keep="false" visible="true" enabled="true" linkedscene="scene_5"
+		/>
+	</scene>
+	
+	<scene name="scene_7_claro" title="Cuarto Secundario 2" onstart="setactiverect(8);" havevrimage.mobilevr="false" havevrimage.no-mobilevr="true" thumburl="panos/7_cuarto_secundario_22.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/7_cuarto_secundario_22.tiles/preview.jpg" />
+
+		<image if="!(webvr.isenabled OR device.mobilevr)" style="scene_7">
+			<cube url="panos/7_cuarto_secundario_22.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280" />
+			<depthmap url="depthmaps/depth7.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+
+		<image stereo="true" stereolabels="1|2" if="webvr.isenabled OR device.mobilevr" style="scene_7">
+			<cube url="panos/7_cuarto_secundario_22.tiles/vr/pano_%t_%s.jpg" />
+			<depthmap url="depthmaps/depth7.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+		
+		<hotspot name="spot1" style="visual_floorspot" tx="750" ty="170" tz="-73" keep="false" visible="true" enabled="true" linkedscene="scene_12"/>
+	</scene>
+	
+	<scene name="scene_8_claro" title="Cuarto Secundario 1" onstart="setactiverect(9);" havevrimage.mobilevr="false" havevrimage.no-mobilevr="true" thumburl="panos/8_cuarto_secundario_12.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/8_cuarto_secundario_12.tiles/preview.jpg" />
+
+		<image if="!(webvr.isenabled OR device.mobilevr)" style="scene_8">
+			<cube url="panos/8_cuarto_secundario_12.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280" />
+			<depthmap url="depthmaps/depth8.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+
+		<image stereo="true" stereolabels="1|2" if="webvr.isenabled OR device.mobilevr" style="scene_8">
+			<cube url="panos/8_cuarto_secundario_12.tiles/vr/pano_%t_%s.jpg" />
+			<depthmap url="depthmaps/depth8.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+		
+		<hotspot name="closet" style="golden_highlight" linkedscene="scene_13">
+			<point ath="-5.96" atv="26.34"/>
+			<point ath="14.45" atv="25.98"/>
+			<point ath="15" atv="-27.01"/>
+			<point ath="31.83" atv="-24.25"/>
+			<point ath="32.26" atv="41.47"/>
+			<point ath="-5.86" atv="45.96"/>
+		</hotspot>
+		
+		<hotspot name="spot1" style="visual_floorspot" tx="860" ty="160" tz="-41" keep="false" visible="true" enabled="true" linkedscene="scene_12" />
+		
+	</scene>
+	
+	<scene name="scene_13_claro" title="Cuarto Secundario 1 - Closet" onstart="setactiverect(9);" havevrimage.mobilevr="false" havevrimage.no-mobilevr="true" thumburl="panos/closet1.tiles/thumb.jpg" lat="" lng="" heading="">
+		
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/closet1.tiles/preview.jpg" />
+
+		<image if="!(webvr.isenabled OR device.mobilevr)" style="scene_13">
+			<cube url="panos/closet1.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280" />
+			<depthmap url="depthmaps/depth13.png" enabled ="true" scale="0.7" offset="0"/> 
+		</image>
+
+		<image stereo="true" stereolabels="1|2" if="webvr.isenabled OR device.mobilevr" style="scene_13">
+			<cube url="panos/closet1.tiles/vr/pano_%t_%s.jpg" />
+			<depthmap url="depthmaps/depth13.png" enabled ="true" scale="0.7" offset="0"/> 
+		</image>
+		
+		<hotspot name="closet" borderalpha="0" fillalpha="0" enabled="true" onclick="tour_loadscene(scene_8)" >
+			<point ath="-5.96" atv="26.34"/>
+			<point ath="14.45" atv="25.98"/>
+			<point ath="15" atv="-27.01"/>
+			<point ath="31.83" atv="-24.25"/>
+			<point ath="32.26" atv="41.47"/>
+			<point ath="-5.86" atv="45.96"/>
+		</hotspot>
+		
+		<hotspot name="spot1" style="visual_floorspot" tx="860" ty="160" tz="-41" keep="false" visible="true" enabled="true" linkedscene="scene_12" />
+		
+	</scene>
+	
+	
+	<scene name="scene_9_claro" title="Habitación Principal" onstart="setactiverect(10);" havevrimage.mobilevr="false" havevrimage.no-mobilevr="true" thumburl="panos/10_ba__o_habitacion_principal2.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/10_ba__o_habitacion_principal2.tiles/preview.jpg" />
+
+		<image if="!(webvr.isenabled OR device.mobilevr)" style="scene_9">
+			<cube url="panos/10_ba__o_habitacion_principal2.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280" />
+			<depthmap url="depthmaps/depth9.png" enabled ="true" scale="0.7" offset="0"/> 
+		</image>
+
+		<image stereo="true" stereolabels="1|2" if="webvr.isenabled OR device.mobilevr" style="scene_9">
+			<cube url="panos/10_ba__o_habitacion_principal2.tiles/vr/pano_%t_%s.jpg" />
+			<depthmap url="depthmaps/depth9.png" enabled ="true" scale="0.7" offset="0"/> 
+		</image>
+		
+		<hotspot name="spot1" style="visual_floorspot" tx="860" ty="160" tz="-71" keep="false" visible="true" enabled="true" linkedscene="scene_12" />
+		<hotspot name="spot2" style="visual_floorspot" tx="860" ty="170" tz="270" keep="false" visible="true" enabled="true" linkedscene="scene_10" />
+	</scene>
+
+	<scene name="scene_10_claro" title="Baño - Habitación Principal" onstart="setactiverect(11);" havevrimage.mobilevr="false" havevrimage.no-mobilevr="true" thumburl="panos/9_habitacion_principal2.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/9_habitacion_principal2.tiles/preview.jpg" />
+
+		<image if="!(webvr.isenabled OR device.mobilevr)" style="scene_10">
+			<cube url="panos/9_habitacion_principal2.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280" />
+			<depthmap url="depthmaps/depth10.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+
+		<image stereo="true" stereolabels="1|2" if="webvr.isenabled OR device.mobilevr" style="scene_10">
+			<cube url="panos/9_habitacion_principal2.tiles/vr/pano_%t_%s.jpg" />
+			<depthmap url="depthmaps/depth10.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+		
+		<hotspot name="spot1" style="visual_floorspot" tx="950.2" ty="220" tz="235" keep="false" visible="true" enabled="true" linkedscene="scene_9" />
+	</scene>
+	
+	<include url="cambio_materiales.xml" />
+	<include url="materiales_cocina.xml" />
+
+
+</krpano>

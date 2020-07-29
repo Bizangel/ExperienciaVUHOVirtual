@@ -1,0 +1,374 @@
+<krpano>
+	<action name="change_meson" scope="local" args="mesoncolor">
+		
+		copy(curr_name,xml.scene);
+		if(get(curr_name) == 'deprecated',
+			tour_loadscene(calc('scene_4_madera_neutra_meson_' + mesoncolor));
+			,
+			indexoftxt(i,get(curr_name),'meson');
+			add(i,6);
+			tour_loadscene(calc(slice(curr_name,0,i) + mesoncolor));
+		);
+	</action>
+	
+	<action name="change_madera" scope="local" args="maderacolor">
+		copy(curr_name,xml.scene);
+		if(get(curr_name) == 'deprecated',
+			tour_loadscene(calc('scene_4_madera_' + maderacolor +  '_meson_gris'));
+			,
+			indexoftxt(i,get(curr_name),'_meson');
+			tour_loadscene(calc('scene_4_madera_' + maderacolor + slice(curr_name,i,curr_name.length)));
+		);
+	</action>
+	
+	<action name="set_material_madera_ui" scope="local" args="nmadera, onoff">
+		calc(floorname_ui,'maderaui' + nmadera);
+		copy(floorname,layer[get(floorname_ui)].url);
+		indexoftxt(i,get(floorname),'madera');
+		add(i,7);
+		calc(floorurlbase,slice(floorname,0,i));
+		calc(layer[get(floorname_ui)].url,floorurlbase+onoff+'.png');
+	</action>
+	
+	<action name="set_material_meson_ui" scope="local" args="nmeson, onoff">
+		calc(floorname_ui,'mesonui' + nmeson);
+		copy(floorname,layer[get(floorname_ui)].url);
+		indexoftxt(i,get(floorname),'meson');
+		add(i,6);
+		calc(floorurlbase,slice(floorname,0,i));
+		calc(layer[get(floorname_ui)].url,floorurlbase+onoff+'.png');
+	</action>
+	
+	<action name="disable_material_ui" scope="local">
+		show_material_button();
+		
+		
+		set_material_madera_ui(1,off); set_material_madera_ui(2,off); set_material_madera_ui(3,off);
+		set_material_meson_ui(1,off); set_material_meson_ui(2,off); set_material_meson_ui(3,off);
+		
+		tween(layer[kitchen_window].alpha,0);
+		set(layer[kitchen_window].enabled,false);
+		
+		set(layer[mesonui1].enabled,false);
+		set(layer[mesonui2].enabled,false);
+		set(layer[mesonui3].enabled,false);
+		
+		set(layer[maderaui1].enabled,false);
+		set(layer[maderaui2].enabled,false);
+		set(layer[maderaui3].enabled,false);
+	</action>
+	
+	<action name="enable_material_ui" scope="local">
+		hide_material_button();
+		
+		tween(layer[kitchen_window].alpha,1);
+		set(layer[kitchen_window].enabled,true);
+		
+		set(layer[mesonui1].enabled,true);
+		set(layer[mesonui2].enabled,true);
+		set(layer[mesonui3].enabled,true);
+		
+		set(layer[maderaui1].enabled,true);
+		set(layer[maderaui2].enabled,true);
+		set(layer[maderaui3].enabled,true);
+	</action>
+	
+	<!-- ACTUAL UI -->
+	
+	<action name="overlay_kitchen_mobile_exceptions" autorun="onstart">
+		
+		if(device.handheld == true,
+			set(layer[kitchen_window].scale,0.15);
+		);
+	</action>
+	<layer name="kitchen_window" keep="true" type="image" maskchildren="true" url="%ROOT%/icons/kitchen_menu.png" alpha="0" handcursor="false"
+	align="bottomcenter" x="0%" y="5%" scale="0.3" scalechildren="true" enabled="false">
+		
+		<layer name="mesonui1" type="image" url="%VIEWER%/icons/meson1off.png" x="+40%" y="12%" align="centered" scale="0.3" 
+			onclick="change_meson(blanco);" enabled="false" alpha="1" />
+		<layer name="mesonui2" type="image" url="%VIEWER%/icons/meson2off.png" x="+25%" y="12%" align="centered" scale="0.3" 
+			onclick="change_meson(gris);" enabled="false" alpha="1" />
+		<layer name="mesonui3" type="image" url="%VIEWER%/icons/meson3off.png" x="+10%" y="12%" align="centered" scale="0.3" 
+			onclick="change_meson(negro);" enabled="false" alpha="1" />
+			
+		<layer name="maderaui1" type="image" url="%VIEWER%/icons/madera3off.png" x="-10%" y="12%" align="centered" scale="0.3" 
+			onclick="change_madera(clara);" enabled="false" alpha="1" />
+		<layer name="maderaui2" type="image" url="%VIEWER%/icons/madera1off.png" x="-25%" y="12%" align="centered" scale="0.3" 
+			onclick="change_madera(neutra);" enabled="false" alpha="1" />
+		<layer name="maderaui3" type="image" url="%VIEWER%/icons/madera2off.png" x="-40%" y="12%" align="centered" scale="0.3" 
+			onclick="change_madera(oscura);" enabled="false" alpha="1" />
+			
+	</layer>
+	<!-- SCENES -->
+	
+	<scene name="scene_4_madera_neutra_meson_gris" title="Cocina Acabado A" havevrimage.mobilevr="false" havevrimage.no-mobilevr="true" thumburl="panos/05_cocina_matriales_a.tiles/thumb.jpg" lat="" lng="" heading="" style="" 
+	onstart="enable_material_ui();set_material_madera_ui(2,on);set_material_meson_ui(2,on);setactiverect(2);">
+
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/05_cocina_matriales_a.tiles/preview.jpg" />
+
+		<image if="!(webvr.isenabled OR device.mobilevr)" style="scene_2">
+			<cube url="panos/05_cocina_matriales_a.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280" />
+			<depthmap url="depthmaps/depth2_materials.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+
+		<image stereo="true" stereolabels="1|2" if="webvr.isenabled OR device.mobilevr" style="scene_2">
+			<cube url="panos/05_cocina_matriales_a.tiles/vr/pano_%t_%s.jpg" />
+			<depthmap url="depthmaps/depth2_materials.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+		
+		<hotspot name="spot1" style="visual_floorspot" tx="50" ty="150" tz="124" keep="false" visible="true" enabled="true" linkedscene="scene_1" />
+		
+		<hotspot name="spot2" ath="86" atv="-3" url="%VIEWER%/icons/switchmatoff.png" scale="0.15" onclick="change_meson(blanco)" 
+		if="(webvr.isenabled OR device.mobilevr)"
+		onover="set(hotspot[spot2].url,%VIEWER%/icons/switchmaton.png);"
+		onout="set(hotspot[spot2].url,%VIEWER%/icons/switchmatoff.png);"
+		/>
+		<hotspot name="spot3" ath="61" atv="17" url="%VIEWER%/icons/switchmatoff.png" scale="0.15" onclick="change_madera(clara)" if="(webvr.isenabled OR device.mobilevr)"
+		onover="set(hotspot[spot3].url,%VIEWER%/icons/switchmaton.png);"
+		onout="set(hotspot[spot3].url,%VIEWER%/icons/switchmatoff.png);"
+		/>
+	</scene>
+
+	<scene name="scene_4_madera_neutra_meson_blanco" title="Cocina Acabado B" style="" havevrimage.mobilevr="false" havevrimage.no-mobilevr="true" thumburl="panos/materialb.tiles/thumb.jpg" lat="" lng="" heading=""
+	onstart="enable_material_ui();set_material_madera_ui(2,on);set_material_meson_ui(1,on);">
+
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/materialb.tiles/preview.jpg" />
+
+		<image if="!(webvr.isenabled OR device.mobilevr)" style="scene_2">
+			<cube url="panos/materialb.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280" />
+			<depthmap url="depthmaps/depth2_materials.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+
+		<image stereo="true" stereolabels="1|2" if="webvr.isenabled OR device.mobilevr" style="scene_2">
+			<cube url="panos/materialb.tiles/vr/pano_%t_%s.jpg" />
+			<depthmap url="depthmaps/depth2_materials.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+		
+		<hotspot name="spot1" style="visual_floorspot" tx="50" ty="150" tz="124" keep="false" visible="true" enabled="true" linkedscene="scene_1"/>
+		
+		<hotspot name="spot2" ath="86" atv="-3" url="%VIEWER%/icons/switchmatoff.png" scale="0.15" onclick="change_meson(negro)" 
+		if="(webvr.isenabled OR device.mobilevr)"
+		onover="set(hotspot[spot2].url,%VIEWER%/icons/switchmaton.png);"
+		onout="set(hotspot[spot2].url,%VIEWER%/icons/switchmatoff.png);"
+		/>
+		<hotspot name="spot3" ath="61" atv="17" url="%VIEWER%/icons/switchmatoff.png" scale="0.15" onclick="change_madera(clara)" if="(webvr.isenabled OR device.mobilevr)"
+		onover="set(hotspot[spot3].url,%VIEWER%/icons/switchmaton.png);"
+		onout="set(hotspot[spot3].url,%VIEWER%/icons/switchmatoff.png);"
+		/>
+	</scene>
+	
+	<scene name="scene_4_madera_neutra_meson_negro" title="Cocina Acabado C" style="" havevrimage.mobilevr="false" havevrimage.no-mobilevr="true" thumburl="panos/07_cocina_matriales_c.tiles/thumb.jpg" lat="" lng="" heading=""
+	onstart="enable_material_ui();set_material_madera_ui(2,on);set_material_meson_ui(3,on);">
+
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/07_cocina_matriales_c.tiles/preview.jpg" />
+
+		<image if="!(webvr.isenabled OR device.mobilevr)" style="scene_2">
+			<cube url="panos/07_cocina_matriales_c.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280" />
+			<depthmap url="depthmaps/depth2_materials.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+
+		<image stereo="true" stereolabels="1|2" if="webvr.isenabled OR device.mobilevr" style="scene_2">
+			<cube url="panos/07_cocina_matriales_c.tiles/vr/pano_%t_%s.jpg" />
+			<depthmap url="depthmaps/depth2_materials.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+		
+		<hotspot name="spot1" style="visual_floorspot" tx="50" ty="150" tz="124" keep="false" visible="true" enabled="true" linkedscene="scene_1" />
+		
+		<hotspot name="spot2" ath="86" atv="-3" url="%VIEWER%/icons/switchmatoff.png" scale="0.15" onclick="change_meson(gris)" 
+		if="(webvr.isenabled OR device.mobilevr)"
+		onover="set(hotspot[spot2].url,%VIEWER%/icons/switchmaton.png);"
+		onout="set(hotspot[spot2].url,%VIEWER%/icons/switchmatoff.png);"
+		/>
+		<hotspot name="spot3" ath="61" atv="17" url="%VIEWER%/icons/switchmatoff.png" scale="0.15" onclick="change_madera(clara)" if="(webvr.isenabled OR device.mobilevr)"
+		onover="set(hotspot[spot3].url,%VIEWER%/icons/switchmaton.png);"
+		onout="set(hotspot[spot3].url,%VIEWER%/icons/switchmatoff.png);"
+		/>
+	</scene>
+	
+	<scene name="scene_4_madera_clara_meson_gris" title="Cocina Acabado D" style="" havevrimage.mobilevr="false" havevrimage.no-mobilevr="true" thumburl="panos/materiallld.tiles/thumb.jpg" lat="" lng="" heading=""
+	onstart="enable_material_ui();set_material_madera_ui(1,on);set_material_meson_ui(2,on);">
+
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/materiallld.tiles/preview.jpg" />
+
+		<image if="!(webvr.isenabled OR device.mobilevr)" style="scene_2">
+			<cube url="panos/materiallld.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280" />
+			<depthmap url="depthmaps/depth2_materials.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+
+		<image stereo="true" stereolabels="1|2" if="webvr.isenabled OR device.mobilevr" style="scene_2">
+			<cube url="panos/materiallld.tiles/vr/pano_%t_%s.jpg" />
+			<depthmap url="depthmaps/depth2_materials.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+		
+		<hotspot name="spot1" style="visual_floorspot" tx="50" ty="150" tz="124" keep="false" visible="true" enabled="true" linkedscene="scene_1" />
+		
+		<hotspot name="spot2" ath="86" atv="-3" url="%VIEWER%/icons/switchmatoff.png" scale="0.15" onclick="change_meson(blanco)" 
+		if="(webvr.isenabled OR device.mobilevr)"
+		onover="set(hotspot[spot2].url,%VIEWER%/icons/switchmaton.png);"
+		onout="set(hotspot[spot2].url,%VIEWER%/icons/switchmatoff.png);"
+		/>
+		<hotspot name="spot3" ath="61" atv="17" url="%VIEWER%/icons/switchmatoff.png" scale="0.15" onclick="change_madera(oscura)" if="(webvr.isenabled OR device.mobilevr)"
+		onover="set(hotspot[spot3].url,%VIEWER%/icons/switchmaton.png);"
+		onout="set(hotspot[spot3].url,%VIEWER%/icons/switchmatoff.png);"
+		/>
+	</scene>
+	
+	<scene name="scene_4_madera_clara_meson_blanco" title="Cocina Acabado E" style="" havevrimage.mobilevr="false" havevrimage.no-mobilevr="true" thumburl="panos/09_cocina_matriales_e.tiles/thumb.jpg" lat="" lng="" heading=""
+	onstart="enable_material_ui();set_material_madera_ui(1,on);set_material_meson_ui(1,on);">
+
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/09_cocina_matriales_e.tiles/preview.jpg" />
+
+		<image if="!(webvr.isenabled OR device.mobilevr)" style="scene_2">
+			<cube url="panos/09_cocina_matriales_e.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280" />
+			<depthmap url="depthmaps/depth2_materials.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+
+		<image stereo="true" stereolabels="1|2" if="webvr.isenabled OR device.mobilevr" style="scene_2">
+			<cube url="panos/09_cocina_matriales_e.tiles/vr/pano_%t_%s.jpg" />
+			<depthmap url="depthmaps/depth2_materials.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+		
+		<hotspot name="spot1" style="visual_floorspot" tx="50" ty="150" tz="124" keep="false" visible="true" enabled="true" linkedscene="scene_1" />
+		
+		<hotspot name="spot2" ath="86" atv="-3" url="%VIEWER%/icons/switchmatoff.png" scale="0.15" onclick="change_meson(negro)" 
+		if="(webvr.isenabled OR device.mobilevr)"
+		onover="set(hotspot[spot2].url,%VIEWER%/icons/switchmaton.png);"
+		onout="set(hotspot[spot2].url,%VIEWER%/icons/switchmatoff.png);"
+		/>
+		<hotspot name="spot3" ath="61" atv="17" url="%VIEWER%/icons/switchmatoff.png" scale="0.15" onclick="change_madera(oscura)" if="(webvr.isenabled OR device.mobilevr)"
+		onover="set(hotspot[spot3].url,%VIEWER%/icons/switchmaton.png);"
+		onout="set(hotspot[spot3].url,%VIEWER%/icons/switchmatoff.png);"
+		/>
+	</scene>
+	
+	<scene name="scene_4_madera_clara_meson_negro" title="Cocina Acabado F" style="" havevrimage.mobilevr="false" havevrimage.no-mobilevr="true" thumburl="panos/materiallf.tiles/thumb.jpg" lat="" lng="" heading=""
+	onstart="enable_material_ui();set_material_madera_ui(1,on);set_material_meson_ui(3,on);">
+
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/materiallf.tiles/preview.jpg" />
+
+		<image if="!(webvr.isenabled OR device.mobilevr)" style="scene_2">
+			<cube url="panos/materiallf.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280" />
+			<depthmap url="depthmaps/depth2_materials.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+
+		<image stereo="true" stereolabels="1|2" if="webvr.isenabled OR device.mobilevr" style="scene_2">
+			<cube url="panos/materiallf.tiles/vr/pano_%t_%s.jpg" />
+			<depthmap url="depthmaps/depth2_materials.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+		
+		<hotspot name="spot1" style="visual_floorspot" tx="50" ty="150" tz="124" keep="false" visible="true" enabled="true" linkedscene="scene_1" />
+		
+		<hotspot name="spot2" ath="86" atv="-3" url="%VIEWER%/icons/switchmatoff.png" scale="0.15" onclick="change_meson(gris)" 
+		if="(webvr.isenabled OR device.mobilevr)"
+		onover="set(hotspot[spot2].url,%VIEWER%/icons/switchmaton.png);"
+		onout="set(hotspot[spot2].url,%VIEWER%/icons/switchmatoff.png);"
+		/>
+		<hotspot name="spot3" ath="61" atv="17" url="%VIEWER%/icons/switchmatoff.png" scale="0.15" onclick="change_madera(oscura)" if="(webvr.isenabled OR device.mobilevr)"
+		onover="set(hotspot[spot3].url,%VIEWER%/icons/switchmaton.png);"
+		onout="set(hotspot[spot3].url,%VIEWER%/icons/switchmatoff.png);"
+		/>
+	</scene>
+	
+	<scene name="scene_4_madera_oscura_meson_gris" title="Cocina Acabado G" style="" havevrimage.mobilevr="false" havevrimage.no-mobilevr="true" thumburl="panos/11_cocina_matriales_g.tiles/thumb.jpg" lat="" lng="" heading=""
+	onstart="enable_material_ui();set_material_madera_ui(3,on);set_material_meson_ui(2,on);">
+
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/11_cocina_matriales_g.tiles/preview.jpg" />
+
+		<image if="!(webvr.isenabled OR device.mobilevr)" style="scene_2">
+			<cube url="panos/11_cocina_matriales_g.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280" />
+			<depthmap url="depthmaps/depth2_materials.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+
+		<image stereo="true" stereolabels="1|2" if="webvr.isenabled OR device.mobilevr" style="scene_2">
+			<cube url="panos/11_cocina_matriales_g.tiles/vr/pano_%t_%s.jpg" />
+			<depthmap url="depthmaps/depth2_materials.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+		
+		<hotspot name="spot1" style="visual_floorspot" tx="50" ty="150" tz="124" keep="false" visible="true" enabled="true" linkedscene="scene_1" />
+		
+		<hotspot name="spot2" ath="86" atv="-3" url="%VIEWER%/icons/switchmatoff.png" scale="0.15" onclick="change_meson(blanco)" 
+		if="(webvr.isenabled OR device.mobilevr)"
+		onover="set(hotspot[spot2].url,%VIEWER%/icons/switchmaton.png);"
+		onout="set(hotspot[spot2].url,%VIEWER%/icons/switchmatoff.png);"
+		/>
+		<hotspot name="spot3" ath="61" atv="17" url="%VIEWER%/icons/switchmatoff.png" scale="0.15" onclick="change_madera(neutra)" if="(webvr.isenabled OR device.mobilevr)"
+		onover="set(hotspot[spot3].url,%VIEWER%/icons/switchmaton.png);"
+		onout="set(hotspot[spot3].url,%VIEWER%/icons/switchmatoff.png);"
+		/>
+	</scene>
+
+	<scene name="scene_4_madera_oscura_meson_blanco" title="Cocina Acabado H" style="" havevrimage.mobilevr="false" havevrimage.no-mobilevr="true" thumburl="panos/12_cocina_matriales_h.tiles/thumb.jpg" lat="" lng="" heading=""
+	onstart="enable_material_ui();set_material_madera_ui(3,on);set_material_meson_ui(1,on);">
+
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/12_cocina_matriales_h.tiles/preview.jpg" />
+
+		<image if="!(webvr.isenabled OR device.mobilevr)" style="scene_2">
+			<cube url="panos/12_cocina_matriales_h.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280" />
+			<depthmap url="depthmaps/depth2_materials.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+
+		<image stereo="true" stereolabels="1|2" if="webvr.isenabled OR device.mobilevr" style="scene_2">
+			<cube url="panos/12_cocina_matriales_h.tiles/vr/pano_%t_%s.jpg" />
+			<depthmap url="depthmaps/depth2_materials.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+		
+		<hotspot name="spot1" style="visual_floorspot" tx="50" ty="150" tz="124" keep="false" visible="true" enabled="true" linkedscene="scene_1"/>
+		
+		<hotspot name="spot2" ath="86" atv="-3" url="%VIEWER%/icons/switchmatoff.png" scale="0.15" onclick="change_meson(negro)" 
+		if="(webvr.isenabled OR device.mobilevr)"
+		onover="set(hotspot[spot2].url,%VIEWER%/icons/switchmaton.png);"
+		onout="set(hotspot[spot2].url,%VIEWER%/icons/switchmatoff.png);"
+		/>
+		<hotspot name="spot3" ath="61" atv="17" url="%VIEWER%/icons/switchmatoff.png" scale="0.15" onclick="change_madera(neutra)" if="(webvr.isenabled OR device.mobilevr)"
+		onover="set(hotspot[spot3].url,%VIEWER%/icons/switchmaton.png);"
+		onout="set(hotspot[spot3].url,%VIEWER%/icons/switchmatoff.png);"
+		/>
+	</scene>
+
+	<scene name="scene_4_madera_oscura_meson_negro" title="Cocina Acabado I" style="" havevrimage.mobilevr="false" havevrimage.no-mobilevr="true" thumburl="panos/13_cocina_matriales_i.tiles/thumb.jpg" lat="" lng="" heading=""
+	onstart="enable_material_ui();set_material_madera_ui(3,on);set_material_meson_ui(3,on);">
+
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/13_cocina_matriales_i.tiles/preview.jpg" />
+
+		<image if="!(webvr.isenabled OR device.mobilevr)" style="scene_2">
+			<cube url="panos/13_cocina_matriales_i.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640,1280" />
+			<depthmap url="depthmaps/depth2_materials.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+
+		<image stereo="true" stereolabels="1|2" if="webvr.isenabled OR device.mobilevr" style="scene_2">
+			<cube url="panos/13_cocina_matriales_i.tiles/vr/pano_%t_%s.jpg" />
+			<depthmap url="depthmaps/depth2_materials.png" enabled ="true" scale="0.7" offset="0" style="depthmapsettings" />
+		</image>
+		
+		<hotspot name="spot1" style="visual_floorspot" tx="50" ty="150" tz="124" keep="false" visible="true" enabled="true" linkedscene="scene_1" />
+		
+		<hotspot name="spot2" ath="86" atv="-3" url="%VIEWER%/icons/switchmatoff.png" scale="0.15" onclick="change_meson(gris)" 
+		if="(webvr.isenabled OR device.mobilevr)"
+		onover="set(hotspot[spot2].url,%VIEWER%/icons/switchmaton.png);"
+		onout="set(hotspot[spot2].url,%VIEWER%/icons/switchmatoff.png);"
+		/>
+		<hotspot name="spot3" ath="61" atv="17" url="%VIEWER%/icons/switchmatoff.png" scale="0.15" onclick="change_madera(neutra)" if="(webvr.isenabled OR device.mobilevr)"
+		onover="set(hotspot[spot3].url,%VIEWER%/icons/switchmaton.png);"
+		onout="set(hotspot[spot3].url,%VIEWER%/icons/switchmatoff.png);"
+		/>
+	</scene>
+	
+</krpano>
