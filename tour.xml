@@ -243,6 +243,23 @@
 			set(layer[infoslide2].scale,get(fix_scale_value));
 			set(layer[infoslide1].scale,get(fix_scale_value));
 		);
+		
+		if(stageheight LE stagewidth,
+			calc(checkvalue,stageheight*0.1 + 642);
+			if(stageheight LE checkvalue,
+				calc(fix_scale_value,stageheight/642);
+				roundval(fix_scale_value,2);
+				
+				set(layer[infoslide3].scale,get(fix_scale_value));
+				set(layer[infoslide2].scale,get(fix_scale_value));
+				set(layer[infoslide1].scale,get(fix_scale_value));
+				
+				set(layer[infoslide1].y,0);
+				set(layer[infoslide2].y,0);
+				set(layer[infoslide3].y,0);
+			);
+		);
+		
 	</action>
 	
 	<action name="force_infodisplay" scope="local" args="infoslidenumber">
